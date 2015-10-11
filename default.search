@@ -2,7 +2,7 @@
   "index": "{{index}}",
   "scroll": "30s",
   "search_type": "scan",
-  "size" : 100,
+  "size" : {{ fetchsize }},
   "body":{
   "query": {
     "bool": {
@@ -10,7 +10,7 @@
         {
           "range": {
             "@timestamp": {
-              "gt": "{{history}}",
+              "gt": "{{from}}",
               "to": "now"
             }
           }
