@@ -11,7 +11,7 @@
   "dependencies": {
     "colour": "^0.7.1",
     "markup-js": "^1.5.21",
-    "elasticsearch": "^8.2.0",
+    "elasticsearch": "^8.2.0"
   },
   "devDependencies": {},
   "repository": {
