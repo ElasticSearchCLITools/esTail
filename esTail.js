@@ -7,6 +7,8 @@ var elasticsearch = require('elasticsearch');
 var markupjs = require('markup-js');
 var fs = require('fs');
 var colour = require('colour')
+var regex;
+var regexflags="gm";
 /**************************************************
 **
 ** Varables
@@ -15,7 +17,7 @@ var colour = require('colour')
 var count = 0;
 var searchDone=true;
 var timerDelay=1;
-var url="http://localhost:9200/"
+var url="localhost:9200"
 var searchFilename="default.search"
 var searchTemplate = fs.readFileSync('default.search', 'utf8')
 var context = {
@@ -39,7 +41,8 @@ process.argv.forEach(function (val, ind, array) {
         console.log("\t[--url="+url+"]");
         console.log("\t[--search=<filename>  default: "+searchFilename);
         console.log("\t[--index=<index>   default: "+context.index);
-        RET_STATUS.message="HELP: Command";
+        console.log("\t[--regex='([\d\.]+)' default: none");
+        console.log("\t[--regexflags='gm' default: "+regexflags);
         process.exit(1)
     }
     if(val.indexOf('=') >0){
@@ -60,8 +63,16 @@ process.argv.forEach(function (val, ind, array) {
         if (s[0] === "--search"){
             searchFilename=s[1];
         }
+	if (s[0] === "--regexflags" ){
+	    regexflags =  s[1];
+	}
+	if (s[0] === "--regex" ){
+	    regex = s[1];
+	}
     }
 });
+regex = new RegExp( regex,regexflags);
+
 if (fs.existsSync(searchFilename)) {
 	var searchTemplate = fs.readFileSync(searchFilename,'utf8'); 
 	//console.info(searchTemplate);
@@ -104,6 +115,13 @@ function doSearch(){
 	client.search( JSON.parse(search) , ph = function printHits(error, response) {
 	  response.hits.hits.forEach(function (hit) {
 		console.log(hit._source["@timestamp"].red+":".green+hit._index.green+":".green+hit._source.message)
+		if ( regex ) {
+			var result = hit._source.message.match(regex);
+			if ( result  ){
+				console.log("\tregex: ".red+JSON.stringify(result).yellow);	
+			}
+		}
+
 		context.lastMessage = hit._source["@timestamp"];
 		count++;
 	  });
