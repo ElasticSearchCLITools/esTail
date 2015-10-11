@@ -23,7 +23,7 @@ var searchFilename="default.search"
 var searchTemplate = fs.readFileSync('default.search', 'utf8')
 var context = {
     index:"_all",
-    lastMessage:"now-1s"
+    lastMessage:"now-1m"
 }
 /**************************************************
 **
@@ -126,9 +126,9 @@ function doSearch(){
 			}
 		}
 		if ( allfields ) {
-			console.log(hit._source["@timestamp"].red+JSON.stringify(hit._source).yellow);
+			console.log(hit._source["@timestamp"].red+": ".green+JSON.stringify(hit._source).yellow);
 		}else{
-		console.log(hit._source["@timestamp"].red+":".green+hit._index.green+":".green+hit._source.message)
+		console.log(hit._source["@timestamp"].red+": ".green+hit._index.green+":".green+hit._source.message)
 		}
 
 
