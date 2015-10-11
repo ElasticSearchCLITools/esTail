@@ -7,7 +7,8 @@ var elasticsearch = require('elasticsearch');
 var markupjs = require('markup-js');
 var fs = require('fs');
 var colour = require('colour')
-var regex;
+var regex=false;
+var allfieldse;
 var regexflags="gm";
 /**************************************************
 **
@@ -39,11 +40,16 @@ process.argv.forEach(function (val, ind, array) {
     if(/(-h|--help|-\?)/.test(val) ){
         console.log(process.argv[0]+":");
         console.log("\t[--url="+url+"]");
-        console.log("\t[--search=<filename>  default: "+searchFilename);
-        console.log("\t[--index=<index>   default: "+context.index);
+        console.log("\t[--search=<filename> default: "+searchFilename);
+        console.log("\t[--index=<index>     default: "+context.index);
         console.log("\t[--regex='([\d\.]+)' default: none");
-        console.log("\t[--regexflags='gm' default: "+regexflags);
+        console.log("\t[--regexflags='gm'   default: "+regexflags);
+        console.log("\t[--allfields         default: false ");
         process.exit(1)
+    }
+    if (val === "--allfields" ){
+	    console.info("allfields=true");
+	    allfields = 1;
     }
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
@@ -52,7 +58,6 @@ process.argv.forEach(function (val, ind, array) {
             process.exit(1);
         }
         console.info(s[0] + ' : ' + s[1]); 
-        
         if (s[0] === "--url" ){
             url=s[1];
         }
@@ -121,6 +126,10 @@ function doSearch(){
 				console.log("\tregex: ".red+JSON.stringify(result).yellow);	
 			}
 		}
+		if ( allfields ) {
+			console.log("\tallfields: ".red+JSON.stringify(hit._source).yellow);
+		}
+
 
 		context.lastMessage = hit._source["@timestamp"];
 		count++;
