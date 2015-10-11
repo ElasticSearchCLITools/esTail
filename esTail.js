@@ -7,23 +7,41 @@ var elasticsearch = require('elasticsearch');
 var markupjs = require('markup-js');
 var fs = require('fs');
 var colour = require('colour')
-var regex=false;
-var allfields;
-var regexflags="gm";
-var rawoutput;
-//console.info = function (){};
 /**************************************************
 **
 ** Varables
 **
 ***************************************************/
+// Display all fields default=undefined 
+var allfields;
+// Is regex flag and the REGEX expression
+var regex=false;
+// default flags for regex g m i
+var regexflags="gm";
+// Display entire hit in JSON format or just deplay the message
+var rawoutput;
+// Disable Info messages
+console.info = function (){};
+/**************************************************
+**
+** Varables
+**
+***************************************************/
+// Count of documents retrieved which tells us when the scan/scroll is finished
 var count = 0;
+// flag when the search scan/scoll is retrieved
 var searchDone=true;
+// the Host to connect to
 var url="localhost:9200"
+// How often to query the index
 var refreshInterval=1000;
+// Default search template (json markup) 
 var searchFilename="default.search"
-var searchTemplate = fs.readFileSync('default.search', 'utf8')
-//var loglevel="error"
+// The DSL Query to Elasticsearch - I'll probably set a default so the script has no requirements to just work
+var searchTemplate "";
+// set loglevel
+var loglevel="error"
+// This is used for the JSON Markup - I'll probably add a file option 
 var context = {
     index:"_all",
     from:"now-10m",
@@ -36,7 +54,7 @@ var context = {
 ***************************************************/
 /*******************************
 **
-** Process Command Line
+** Process Command Line 
 **
 ********************************/
 console.info("Processing Commandline arguments");
@@ -111,8 +129,9 @@ process.argv.forEach(function (val, ind, array) {
         }
     }
 });
+// Convert CLI options to an actual regex expression and set the regex output to be displayed
 regex = new RegExp( regex,regexflags);
-
+// Load the defaultSearch
 if (fs.existsSync(searchFilename)) {
 	var searchTemplate = fs.readFileSync(searchFilename,'utf8'); 
 	//console.info(searchTemplate);
@@ -120,6 +139,7 @@ if (fs.existsSync(searchFilename)) {
 	console.error("file does not exist:"+searchFilename);
 	process.exit(2);
 }
+// Open the Elasticsearch Connection
 var client = new elasticsearch.Client({
   host: url,
   protocol: 'http',
@@ -132,7 +152,7 @@ var client = new elasticsearch.Client({
 });
 /**************************************************
 **
-** Test Connection
+** Test Connection make sure it is available
 **
 ***************************************************/
 client.ping({
@@ -151,40 +171,49 @@ client.ping({
 ** Functions
 **
 *********************************************************************************/
+// Main search
 function doSearch(){
-	//console.log(context);
-	//console.info("Running search".blue);
+	console.info("Running search".blue);
+	// convert the Template to a valid search
 	var search = markupjs.up(searchTemplate,context); 
-        //console.info(search);
+	// Execute the Search
 	client.search( JSON.parse(search) , ph = function printHits(error, response) {
+	  // Loop over the events
 	  response.hits.hits.forEach(function (hit) {
+		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
-			console.log(hit._source["@timestamp"].red+": ".green+JSON.stringify(hit._source).yellow);
+			console.log(hit._source["@timestamp"].red+": ".green+JSON.stringify(hit._source));
 		}else{
+			// If not allfields 
+			// If rawoutput is set Pretty Print the json as output
 			if (rawoutput) {
 				console.log(JSON.stringify(hit,null,2));
 			}else{
+				//If not rawoutput print <indexed time>: <index>:message
 				console.log(hit._source["@timestamp"].red+": ".green+hit._index.green+":".green+hit._source.message)
 			}
 
 		}
+		// If set process the message field via the regex and print the results
 		if ( regex ) {
 			var result = hit._source.message.match(regex);
 			if ( result  ){
 				console.log("\tregex: ".red+JSON.stringify(result).yellow);	
 			}
 		}
-
-
+		// Set the time of the last message timestamp retrieved so we don't requery the same message
 		context.from = hit._source["@timestamp"];
+		// Increment the doc retrived count
 		count++;
 	  });
+	  // If the retrieved docements equals the count then we are done
 	  if ( count >= response.hits.total ){ 
 		  count=0;
 		  searchDone=true;
 		  //console.log("Search complete".blue)
 		  return;
 	  }
+	  // Else query the scroll again to get more documents
 	  client.scroll({
 	      scrollId: response._scroll_id,
 	      scroll: '30s'
@@ -196,5 +225,5 @@ function doSearch(){
 ** Application
 **
 *********************************************************************************/
-
+// set the loop for retrieving files
 setInterval ( function () { if(searchDone) { doSearch()}}, refreshInterval );
