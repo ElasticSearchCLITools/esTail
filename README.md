@@ -20,3 +20,25 @@ And you will see something like
 <Indexed Timestamp>:<index>:<message>
 
 
+```
+# node ./esTail.js --help
+node:
+	[--url=localhost:9200]
+	[--search=<filename> default: default.search
+	[--regex='([d.]+)' default: none
+	[--regexflags='gm'   default: gm
+	[--allfields         default: false 
+	[--raw         	    default: false 
+	[--fetchsize='20'  default: 100 
+	[-i|--refreshInterval='1000'  default: 1000
+			How often a new search is issued
+	[--context='{ 'custom':'json'}'  default:{"index":"_all","from":"now-10m","fetchsize":100}
+			Context is what varables pass to the search template for json markup
+			context=<key>=<val> is a way to set any varable inside the context array. Make sure this is used after --contextfile or --context=<customejson>
+	[--index=<index>|--context=index=<index>     default: _all
+	[--from=<datestamp>|--context=from='now-5m'  default: now-10m
+			from can be of any valid Elasticsearch timevalue or Caclulation 
+```
+
+Complex Example
+
