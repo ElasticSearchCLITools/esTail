@@ -17,8 +17,10 @@ And you will see something like
 2015-10-11T03:12:22.611Z:std-2015.10.11:test
 
 ```
-<Indexed Timestamp>:<index>:<message>
 
+```
+<Indexed Timestamp>:<index>:<message>
+```
 
 ```
 # node ./esTail.js --help
@@ -41,6 +43,7 @@ node:
 ```
 
 Complex Example
+
 ```
 $ node ./esTail.js --index=std\* --regex='([\d\.]+)' --regexflags="gm" --url=localhost:9201 --from='now-24h' --context='{"index":"std*","from":"now-1h","fetchsize":200}' -i=1000 --context=fetchsize=12
 Connected to Elasticsearch cluster.
