@@ -1,5 +1,5 @@
 {
-  "index": "stdin*",
+  "index": "{{index}}",
   "scroll": "30s",
   "search_type": "scan",
   "size" : 100,
@@ -9,24 +9,34 @@
       "must": [
         {
           "range": {
-            "stdin.@timestamp": {
-              "gt": "{{ lastMessage }}",
+            "@timestamp": {
+              "gt": "{{lastMessage}}",
               "to": "now"
             }
           }
         }
       ],
-      "must_not": [
-        {
-          "constant_score": {
-            "filter": {
-              "missing": {
-                "field": "stdin.message"
-              }
-            }
-          }
-        }
-      ],
+"must_not": [
+{
+"constant_score": {
+"filter": {
+"missing": {
+"field": "message"
+}
+}
+}
+}
+,
+{
+"constant_score": {
+"filter": {
+"missing": {
+"field": "@timestamp"
+}
+}
+}
+}
+],
       "should": []
     }
   },
