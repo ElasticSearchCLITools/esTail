@@ -10,7 +10,7 @@
         {
           "range": {
             "@timestamp": {
-              "gt": "{{lastMessage}}",
+              "gt": "{{history}}",
               "to": "now"
             }
           }
