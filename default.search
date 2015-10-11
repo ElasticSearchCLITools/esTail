@@ -1,0 +1,40 @@
+{
+  "index": "stdin*",
+  "scroll": "30s",
+  "search_type": "scan",
+  "size" : 100,
+  "body":{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "stdin.@timestamp": {
+              "gt": "{{ lastMessage }}",
+              "to": "now"
+            }
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "constant_score": {
+            "filter": {
+              "missing": {
+                "field": "stdin.message"
+              }
+            }
+          }
+        }
+      ],
+      "should": []
+    }
+  },
+	  "sort": {
+    "@timestamp": {
+      "order": "asc"
+    }
+  }
+}
+}
+

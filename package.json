@@ -1,0 +1,27 @@
+{
+  "name": "estail",
+  "version": "0.4.0",
+  "description": "ElasticSearch Tail",
+  "main": "scroll.js",
+  "scripts": {
+    "test": "scroll.js"
+  },
+  "author": "Edward Perry",
+  "license": "ISC",
+  "dependencies": {
+    "colour": "^0.7.1",
+    "markup-js": "^1.5.21",
+    "elasticsearch": "^8.2.0",
+    "node-grok": "^1.0.3"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "http://test"
+  },
+  "keywords": [
+    "elasticsearch",
+    "elastic",
+    "tail"
+  ]
+}
