@@ -8,7 +8,7 @@ var markupjs = require('markup-js');
 var fs = require('fs');
 var colour = require('colour')
 var regex=false;
-var allfieldse;
+var allfields;
 var regexflags="gm";
 /**************************************************
 **
@@ -23,7 +23,7 @@ var searchFilename="default.search"
 var searchTemplate = fs.readFileSync('default.search', 'utf8')
 var context = {
     index:"_all",
-    lastMessage:"now-1m"
+    history:"now-1m"
 }
 /**************************************************
 **
@@ -45,6 +45,7 @@ process.argv.forEach(function (val, ind, array) {
         console.log("\t[--regex='([\d\.]+)' default: none");
         console.log("\t[--regexflags='gm'   default: "+regexflags);
         console.log("\t[--allfields         default: false ");
+        console.log("\t[--history='now-1m'  default: now ");
         process.exit(1)
     }
     if (val === "--allfields" ){
@@ -74,6 +75,9 @@ process.argv.forEach(function (val, ind, array) {
 	if (s[0] === "--regex" ){
 	    regex = s[1];
 	}
+	if (s[0] === "--history" ){
+	    regex = s[1];
+	}
     }
 });
 regex = new RegExp( regex,regexflags);
@@ -91,6 +95,8 @@ var client = new elasticsearch.Client({
   keepAlive: true ,
   ignore: [404],
   suggestCompression: true,
+  sniffOnStart: true,
+  sniffInterval: 60000
 //log: "trace"
 //log: "debug"
 });
@@ -100,11 +106,13 @@ var client = new elasticsearch.Client({
 **
 ***************************************************/
 client.ping({
-  requestTimeout: 3000,
+  requestTimeout: 1000,
 }, function (error) {
   if (error) {
     console.error('elasticsearch cluster maybe down!');
     process.exit(1);
+  }else{
+    console.info('Connected to Elasticsearch cluster.')	
   } 
 });
 
@@ -132,7 +140,7 @@ function doSearch(){
 		}
 
 
-		context.lastMessage = hit._source["@timestamp"];
+		context.history = hit._source["@timestamp"];
 		count++;
 	  });
 	  if ( count >= response.hits.total ){ 
