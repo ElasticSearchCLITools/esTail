@@ -119,7 +119,6 @@ function doSearch(){
         //console.info(search);
 	client.search( JSON.parse(search) , ph = function printHits(error, response) {
 	  response.hits.hits.forEach(function (hit) {
-		console.log(hit._source["@timestamp"].red+":".green+hit._index.green+":".green+hit._source.message)
 		if ( regex ) {
 			var result = hit._source.message.match(regex);
 			if ( result  ){
@@ -127,7 +126,9 @@ function doSearch(){
 			}
 		}
 		if ( allfields ) {
-			console.log("\tallfields: ".red+JSON.stringify(hit._source).yellow);
+			console.log(hit._source["@timestamp"].red+JSON.stringify(hit._source).yellow);
+		}else{
+		console.log(hit._source["@timestamp"].red+":".green+hit._index.green+":".green+hit._source.message)
 		}
 
 
