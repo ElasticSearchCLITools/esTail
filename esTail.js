@@ -38,7 +38,7 @@ var refreshInterval=1000;
 // Default search template (json markup) 
 var searchFilename="default.search"
 // The DSL Query to Elasticsearch - I'll probably set a default so the script has no requirements to just work
-var searchTemplate "";
+var searchTemplate = "";
 // set loglevel
 var loglevel="error"
 // This is used for the JSON Markup - I'll probably add a file option 
