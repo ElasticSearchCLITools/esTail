@@ -179,6 +179,10 @@ function doSearch(){
 	// Execute the Search
 	client.search( JSON.parse(search) , ph = function printHits(error, response) {
 	  // Loop over the events
+	  if (error != undefined) {
+		console.error("ERR:".red+error);
+		return;
+	  }
 	  response.hits.hits.forEach(function (hit) {
 		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
