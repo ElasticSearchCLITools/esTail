@@ -10,8 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "colour": "^0.7.1",
+    "elasticsearch": "^8.2.0",
     "markup-js": "^1.5.21",
-    "elasticsearch": "^8.2.0"
+    "moment": "^2.10.6"
   },
   "devDependencies": {},
   "repository": {

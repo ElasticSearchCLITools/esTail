@@ -7,12 +7,14 @@ var elasticsearch = require('elasticsearch');
 var markupjs = require('markup-js');
 var fs = require('fs');
 var colour = require('colour')
+var moment = require('moment')
 /**************************************************
 **
 ** Varables
 **
 ***************************************************/
 // Display all fields default=undefined 
+var output=[];
 var allfields;
 // Is regex flag and the REGEX expression
 var regex=false;
@@ -28,7 +30,6 @@ console.info = function (){};
 **
 ***************************************************/
 // Count of documents retrieved which tells us when the scan/scroll is finished
-var count = 0;
 // flag when the search scan/scoll is retrieved
 var searchDone=true;
 // the Host to connect to
@@ -172,21 +173,26 @@ client.ping({
 **
 *********************************************************************************/
 // Main search
-function doSearch(){
-	console.info("Running search".blue);
-	// convert the Template to a valid search
-	var search = markupjs.up(searchTemplate,context); 
-	// Execute the Search
-	client.search( JSON.parse(search) , ph = function printHits(error, response) {
-	  // Loop over the events
-	  if (error != undefined) {
-		console.error("ERR:".red+error);
-		return;
+function printOutput(){
+  output.sort(function ( a, b){
+	  a1 = moment(a._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
+	  b1 = moment(b._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
+	  
+	  if ( a1 < b1 ) {
+	    return -1;
 	  }
-	  response.hits.hits.forEach(function (hit) {
+	  if ( a1 < b1 ) {
+	    return 1;
+	  }
+	  // a must be equal to b
+	  return 0;
+	});
+	while ( output.length > 0 ) {
+		hit = output.shift();	
 		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
 			console.log(hit._source["@timestamp"].red+": ".green+JSON.stringify(hit._source));
+
 		}else{
 			// If not allfields 
 			// If rawoutput is set Pretty Print the json as output
@@ -207,12 +213,26 @@ function doSearch(){
 		}
 		// Set the time of the last message timestamp retrieved so we don't requery the same message
 		context.from = hit._source["@timestamp"];
-		// Increment the doc retrived count
-		count++;
+	  };
+}
+function doSearch(){
+	console.info("Running search".blue);
+	// convert the Template to a valid search
+	var search = markupjs.up(searchTemplate,context); 
+	// Execute the Search
+	client.search( JSON.parse(search) , ph = function printHits(error, response) {
+	  // Loop over the events
+	  if (error != undefined) {
+		console.error("ERR:".red+error);
+		return;
+	  }
+	  response.hits.hits.forEach(function (hit) {
+		// If allfields cli option is set show all the fields not just one field
+		output.push(hit);
 	  });
 	  // If the retrieved docements equals the count then we are done
-	  if ( count >= response.hits.total ){ 
-		  count=0;
+	  if ( output.length >= response.hits.total ){ 
+		  printOutput()
 		  searchDone=true;
 		  //console.log("Search complete".blue)
 		  return;
