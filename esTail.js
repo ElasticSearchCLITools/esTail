@@ -32,7 +32,7 @@ var count = 0;
 // flag when the search scan/scoll is retrieved
 var searchDone=true;
 // the Host to connect to
-var url="localhost:9200"
+var hostportlist="localhost:9200"
 // How often to query the index
 var refreshInterval=1000;
 // Default search template (json markup) 
@@ -61,7 +61,7 @@ console.info("Processing Commandline arguments");
 process.argv.forEach(function (val, ind, array) {
     if(/^(-h|--help|-\?)$/.test(val) ){
         console.log(process.argv[0]+":");
-        console.log("\t[--url="+url+"]");
+        console.log("\t[--hostport="+hostportlist+"]");
         console.log("\t[--search=<filename> default: "+searchFilename);
         console.log("\t[--regex='([\d\.]+)' default: none");
         console.log("\t[--regexflags='gm'   default: "+regexflags);
@@ -89,8 +89,8 @@ process.argv.forEach(function (val, ind, array) {
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
         console.info(s[0] + ' : ' + s[1]); 
-        if (s[0] === "--url" ){
-            url=s[1];
+        if (s[0] === "--hostport" ){
+            hostportlist=s[1];
         }
 	if (s[0] === "--regexflags" ){
 	    regexflags =  s[1];
@@ -141,7 +141,7 @@ if (fs.existsSync(searchFilename)) {
 }
 // Open the Elasticsearch Connection
 var client = new elasticsearch.Client({
-  host: url,
+  host: hostportlist,
   protocol: 'http',
   index: context.index,
   keepAlive: true ,
