@@ -174,7 +174,7 @@ client.ping({
 *********************************************************************************/
 // Main search
 function printOutput(){
-  output.sort(function ( a, b){
+  output= output.sort(function ( a, b){
 	  a1 = moment(a._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
 	  b1 = moment(b._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
 	  
