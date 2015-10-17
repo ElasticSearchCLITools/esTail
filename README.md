@@ -25,7 +25,7 @@ And you will see something like
 ```
 # node ./esTail.js --help
 node:
-	[--url=localhost:9200]
+	[--hostport=localhost:9200]
 	[--search=<filename> default: default.search
 	[--regex='([d.]+)' default: none
 	[--regexflags='gm'   default: gm
@@ -45,7 +45,7 @@ node:
 Complex Example
 
 ```
-$ node ./esTail.js --index=std\* --regex='([\d\.]+)' --regexflags="gm" --url=localhost:9201 --from='now-24h' --context='{"index":"std*","from":"now-1h","fetchsize":200}' -i=1000 --context=fetchsize=12
+$ node ./esTail.js --index=std\* --regex='([\d\.]+)' --regexflags="gm" --hostport=localhost:9201 --from='now-24h' --context='{"index":"std*","from":"now-1h","fetchsize":200}' -i=1000 --context=fetchsize=12
 Connected to Elasticsearch cluster.
 2015-10-11T16:05:50.073Z: std-2015.10.11:Sun Oct 11 12:05:50 EDT 2015
 	regex: ["11","12","05","50","2015"]
