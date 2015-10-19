@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**************************************************
 **
 ** Requirements
@@ -37,7 +38,7 @@ var hostportlist="localhost:9200"
 // How often to query the index
 var refreshInterval=1000;
 // Default search template (json markup) 
-var searchFilename="default.search"
+var searchFilename=__dirname+"/default.search"
 // The DSL Query to Elasticsearch - I'll probably set a default so the script has no requirements to just work
 var searchTemplate = "";
 // set loglevel
