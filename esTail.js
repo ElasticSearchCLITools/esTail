@@ -129,6 +129,9 @@ process.argv.forEach(function (val, ind, array) {
         if (s[0] === "--search"){
             searchFilename=s[1];
         }
+        if (s[0] === "--index"){
+            context.index=s[1];
+        }
     }
 });
 // Convert CLI options to an actual regex expression and set the regex output to be displayed
