@@ -151,9 +151,10 @@ var client = new elasticsearch.Client({
   index: context.index,
   keepAlive: true ,
   ignore: [404],
+  log: loglevel,
   suggestCompression: true,
   sniffOnStart: true,
-  sniffInterval: 60000,
+  sniffInterval: 60000
 });
 /**************************************************
 **
@@ -178,19 +179,13 @@ client.ping({
 *********************************************************************************/
 // Main search
 function printOutput(){
-  output= output.sort(function ( a, b){
-	  a1 = moment(a._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
-	  b1 = moment(b._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
-	  
-	  if ( a1 < b1 ) {
-	    return -1;
-	  }
-	  if ( a1 < b1 ) {
-	    return 1;
-	  }
-	  // a must be equal to b
-	  return 0;
-	});
+  //s.sort(function ( a, b){
+//	  a1 = moment(a._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
+//	  b1 = moment(b._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
+//	  console.log(a1-b1);
+//	  return a1-b1;
+//	});
+  
 	while ( output.length > 0 ) {
 		hit = output.shift();	
 		// If allfields cli option is set show all the fields not just one field
@@ -221,6 +216,10 @@ function printOutput(){
 }
 function doSearch(){
 	console.info("Running search".blue);
+        if (! searchDone ) {
+		console.log("Search Not Complete");
+		return;
+	}
 	// convert the Template to a valid search
 	var search = markupjs.up(searchTemplate,context); 
 	// Execute the Search
@@ -238,7 +237,7 @@ function doSearch(){
 	  if ( output.length >= response.hits.total ){ 
 		  printOutput()
 		  searchDone=true;
-		  //console.log("Search complete".blue)
+		  console.info("Search complete".blue)
 		  return;
 	  }
 	  // Else query the scroll again to get more documents
