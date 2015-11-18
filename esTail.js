@@ -24,7 +24,7 @@ var regexflags="gm";
 // Display entire hit in JSON format or just deplay the message
 var rawoutput;
 // Disable Info messages
-//console.info = function (){};
+console.info = function (){};
 /**************************************************
 **
 ** Varables
