@@ -188,7 +188,7 @@ function printOutput(){
 	console.info("INFO".yellow+" inPrintOutput length to print="+output.length); 
 	while ( output.length > 0 ) {
 		hit = output.shift();	
-		console.log("===="+hit+" of "+output.length);
+		console.info("===="+hit+" of "+output.length);
 		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
 			console.log(hit._source["@timestamp"].red+":\n".green+JSON.stringify(hit._source));
