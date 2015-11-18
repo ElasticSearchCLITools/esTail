@@ -24,7 +24,7 @@ var regexflags="gm";
 // Display entire hit in JSON format or just deplay the message
 var rawoutput;
 // Disable Info messages
-console.info = function (){};
+//console.info = function (){};
 /**************************************************
 **
 ** Varables
@@ -185,12 +185,13 @@ function printOutput(){
 //	  console.log(a1-b1);
 //	  return a1-b1;
 //	});
-  
+	console.info("INFO".yellow+" inPrintOutput length to print="+output.length); 
 	while ( output.length > 0 ) {
 		hit = output.shift();	
+		console.log("===="+hit+" of "+output.length);
 		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
-			console.log(hit._source["@timestamp"].red+": ".green+JSON.stringify(hit._source));
+			console.log(hit._source["@timestamp"].red+":\n".green+JSON.stringify(hit._source));
 
 		}else{
 			// If not allfields 
@@ -229,13 +230,15 @@ function doSearch(){
 		console.error("ERR:".red+error);
 		return;
 	  }
+	  console.info("INFO".yellow+"Count = "+response.hits.hits.length);
 	  response.hits.hits.forEach(function (hit) {
 		// If allfields cli option is set show all the fields not just one field
+		//console.info("INFO".yellow+"Push Object");
 		output.push(hit);
 	  });
 	  // If the retrieved docements equals the count then we are done
+	  printOutput()
 	  if ( output.length >= response.hits.total ){ 
-		  printOutput()
 		  searchDone=true;
 		  console.info("Search complete".blue)
 		  return;
