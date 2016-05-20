@@ -34,7 +34,7 @@ console.info = function (){};
 // flag when the search scan/scoll is retrieved
 var searchDone=true;
 // the Host to connect to
-var hostportlist="localhost:9200"
+var hostportlist=["http://127.0.0.1:9200"]
 // How often to query the index
 var refreshInterval=1000;
 // Default search template (json markup) 
@@ -144,13 +144,12 @@ if (fs.existsSync(searchFilename)) {
 // Open the Elasticsearch Connection
 var client = new elasticsearch.Client({
   host: hostportlist,
-  protocol: 'http',
+  sniffOnStart: true,
+  sniffInterval: 60000,
   index: context.index,
   keepAlive: true ,
   ignore: [404],
-  suggestCompression: true,
-  sniffOnStart: true,
-  sniffInterval: 60000,
+  suggestCompression: true
 });
 /**************************************************
 **
