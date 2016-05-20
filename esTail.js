@@ -129,6 +129,9 @@ process.argv.forEach(function (val, ind, array) {
         if (s[0] === "--search"){
             searchFilename=s[1];
         }
+        if (s[0] === "--index"){
+            context.index=s[1];
+        }
     }
 });
 // Convert CLI options to an actual regex expression and set the regex output to be displayed
@@ -149,7 +152,11 @@ var client = new elasticsearch.Client({
   index: context.index,
   keepAlive: true ,
   ignore: [404],
-  suggestCompression: true
+  log: loglevel,
+  suggestCompression: true,
+  sniffOnStart: true,
+  sniffInterval: 60000
+>>>>>>> refs/remotes/origin/master
 });
 /**************************************************
 **
@@ -174,24 +181,19 @@ client.ping({
 *********************************************************************************/
 // Main search
 function printOutput(){
-  output= output.sort(function ( a, b){
-	  a1 = moment(a._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
-	  b1 = moment(b._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
-	  
-	  if ( a1 < b1 ) {
-	    return -1;
-	  }
-	  if ( a1 < b1 ) {
-	    return 1;
-	  }
-	  // a must be equal to b
-	  return 0;
-	});
+  //s.sort(function ( a, b){
+//	  a1 = moment(a._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
+//	  b1 = moment(b._source["@timestamp"],"YYYY-MM-DDTHH:mm:ss.SSSZ").format("x");
+//	  console.log(a1-b1);
+//	  return a1-b1;
+//	});
+	console.info("INFO".yellow+" inPrintOutput length to print="+output.length); 
 	while ( output.length > 0 ) {
 		hit = output.shift();	
+		console.info("===="+hit+" of "+output.length);
 		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
-			console.log(hit._source["@timestamp"].red+": ".green+JSON.stringify(hit._source));
+			console.log(hit._source["@timestamp"].red+":\n".green+JSON.stringify(hit._source));
 
 		}else{
 			// If not allfields 
@@ -217,6 +219,10 @@ function printOutput(){
 }
 function doSearch(){
 	console.info("Running search".blue);
+        if (! searchDone ) {
+		console.log("Search Not Complete");
+		return;
+	}
 	// convert the Template to a valid search
 	var search = markupjs.up(searchTemplate,context); 
 	// Execute the Search
@@ -226,15 +232,17 @@ function doSearch(){
 		console.error("ERR:".red+error);
 		return;
 	  }
+	  console.info("INFO".yellow+"Count = "+response.hits.hits.length);
 	  response.hits.hits.forEach(function (hit) {
 		// If allfields cli option is set show all the fields not just one field
+		//console.info("INFO".yellow+"Push Object");
 		output.push(hit);
 	  });
 	  // If the retrieved docements equals the count then we are done
+	  printOutput()
 	  if ( output.length >= response.hits.total ){ 
-		  printOutput()
 		  searchDone=true;
-		  //console.log("Search complete".blue)
+		  console.info("Search complete".blue)
 		  return;
 	  }
 	  // Else query the scroll again to get more documents
