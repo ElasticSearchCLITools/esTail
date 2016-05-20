@@ -156,7 +156,6 @@ var client = new elasticsearch.Client({
   suggestCompression: true,
   sniffOnStart: true,
   sniffInterval: 60000
->>>>>>> refs/remotes/origin/master
 });
 /**************************************************
 **
