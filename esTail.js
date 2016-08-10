@@ -49,6 +49,8 @@ var context = {
     from:"now-10m",
     fetchsize: 100
 }
+// Add color output
+var coloroutput = true;
 /***************************************************
 **
 ** Setup
@@ -69,6 +71,7 @@ process.argv.forEach(function (val, ind, array) {
         console.log("\t[--regexflags='gm'   default: "+regexflags);
         console.log("\t[--allfields         default: false ");
         console.log("\t[--raw         	    default: false ");
+        console.log("\t[--nocolor      	    default: color output is turned on ");
         console.log("\t[--fetchsize='20'  default: 100 ");
         console.log("\t[-i|--refreshInterval='1000'  default: "+refreshInterval);
 	console.log("\t\t\tHow often a new search is issued");
@@ -87,6 +90,9 @@ process.argv.forEach(function (val, ind, array) {
     if (val === "--raw"){
             rawoutput=true;
 	    console.info("--raw="+rawoutput);
+    }
+    if (val === "--nocolor"){
+            coloroutput=false;
     }
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
@@ -192,7 +198,11 @@ function printOutput(){
 		console.info("===="+hit+" of "+output.length);
 		// If allfields cli option is set show all the fields not just one field
 		if ( allfields ) {
-			console.log(hit._source["@timestamp"].red+":\n".green+JSON.stringify(hit._source));
+			if ( coloroutput ) {
+				console.log(hit._source["@timestamp"].red+":\n".green+JSON.stringify(hit._source));
+			} else {
+				console.log(JSON.stringify(hit._source));
+			}
 
 		}else{
 			// If not allfields 
