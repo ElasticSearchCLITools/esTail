@@ -1,7 +1,7 @@
 {
   "index": "{{index}}",
   "scroll": "30s",
-  "search_type": "scan",
+  "sort": "_doc",
   "size" : {{ fetchsize }},
   "body":{
   "query": {
@@ -20,8 +20,12 @@
 {
 "constant_score": {
 "filter": {
-"missing": {
+"bool": {
+"must_not": {
+"exists": {
 "field": "message"
+}
+}
 }
 }
 }
@@ -30,8 +34,12 @@
 {
 "constant_score": {
 "filter": {
-"missing": {
+"bool": {
+"must_not": {
+"exists": {
 "field": "@timestamp"
+}
+}
 }
 }
 }
@@ -40,11 +48,10 @@
       "should": []
     }
   },
-	  "sort": {
+          "sort": {
     "@timestamp": {
       "order": "asc"
     }
   }
 }
 }
-
